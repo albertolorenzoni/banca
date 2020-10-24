@@ -1,6 +1,7 @@
 package com.banca.domain;
 
 import com.banca.data.DatabaseInterface;
+import com.banca.data.FileSystemDatabase;
 import com.banca.data.InMemoryDatabase;
 import com.banca.exception.SaldoInsufficienteException;
 
@@ -13,6 +14,7 @@ public class Banca {
 	private String[] codiciSegreti = { "adfhfda", "asdafaf", "zxcxv" };
 
 	private DatabaseInterface database = new InMemoryDatabase();
+	private DatabaseInterface fileDatabase = new FileSystemDatabase();
 
 	// Singleton -> Costruttore privato
 	private Banca() {
@@ -20,6 +22,9 @@ public class Banca {
 
 	public Iterable<Cliente> getClienti() {
 		return database.getAllClients();
+	}
+	public Iterable<Impiegato> getImpiegati() {
+		return fileDatabase.getAllEmployees();
 	}
 
 	// getInstance restituisce l'unica instance del singleton Banca
