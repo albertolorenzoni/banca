@@ -12,6 +12,7 @@ import com.banca.domain.Impiegato;
 import com.banca.domain.Sesso;
 import com.banca.domain.StatImpiegati;
 
+
 public class InterfacciaImpiegati {
 	public static void main(String[] args) {
 		
@@ -19,19 +20,17 @@ public class InterfacciaImpiegati {
 		List<Impiegato> impiegati = new ArrayList<Impiegato>();
 
 		banca.getImpiegati().forEach(impiegati::add); // Creo una list dall'iterable in modo da poter usare stream
-//		impiegati.sort((i1, i2) -> ((int) Math.signum(i1.getStipendio() - i2.getStipendio())));
 		
-//		impiegati.forEach(System.out::println);
 		
-		System.out.println("Statisctiche calcolate con metodi imperativi:");
-		statistiche(impiegati);
-		
-		System.out.println("________________________________________________________________");
-		
-		System.out.println("Statisctiche calcolate con metodi funzionali:");
-		statisticheFunzionali(impiegati);
-		
-		System.out.println("________________________________________________________________");
+//		System.out.println("Statisctiche calcolate con metodi imperativi:");
+//		statistiche(impiegati);
+//		
+//		System.out.println("________________________________________________________________");
+//		
+//		System.out.println("Statisctiche calcolate con metodi funzionali:");
+//		statisticheFunzionali(impiegati);
+//		
+//		System.out.println("________________________________________________________________");
 		
 		System.out.println("Statisctiche calcolate con metodo reduce:");
 		statisticheReduce(impiegati);
@@ -39,11 +38,16 @@ public class InterfacciaImpiegati {
 	}
 
 	private static void statisticheReduce(List<Impiegato> impiegati) {
-		StatImpiegati statistiche = impiegati.stream().reduce(new StatImpiegati(), (si, i) -> si.combina(i), (si1, si2) -> si1.combina(si2));
+		StatImpiegati statistiche = impiegati.stream().parallel()
+				.reduce(new StatImpiegati(), (si, i) -> StatImpiegati.combina(si, i), 
+				(si1, si2) -> StatImpiegati.combina(si1, si2));
 		
+		
+				
 		System.out.println("Totale stipendi: " + statistiche.getSommaStipendi());
 		System.out.println("Media stipendi: " + statistiche.getStipendioMedio());
-//		System.out.println("Mediana stipendi: " + statistiche.getMedianaStipendi);
+		System.out.println("Mediana stipendi: " + statistiche.getMediana());
+		System.out.println("Moda stipendi: " + statistiche.getModa());
 		System.out.println("Divario retributivo di genere? " + statistiche.genderWageGap());
 		System.out.println("Impiegati maschi al di sotto dei 25 anni:");
 		statistiche.getMaschiMin25().forEach(System.out::println);
@@ -67,6 +71,8 @@ public class InterfacciaImpiegati {
 				.collect(Collectors.toList());
 		
 		
+		
+		
 		System.out.println("Totale stipendi: " + sommaStipendi);
 		System.out.println("Media stipendi: " + mediaStipendi);
 		System.out.println("Mediana stipendi: " + medianaStipendi);
@@ -84,6 +90,8 @@ public class InterfacciaImpiegati {
 		double stipendioMaxF = 0;
 		boolean genderWageGap = false;
 		List<Impiegato> impMaschiSotto25 = new ArrayList<Impiegato>();
+		
+		impiegati.sort((i1, i2) -> ((int) Math.signum(i1.getStipendio() - i2.getStipendio())));
 
 		for (Impiegato i : impiegati) {
 			sommaStipendi += i.getStipendio();
